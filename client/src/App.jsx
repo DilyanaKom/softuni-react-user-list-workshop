@@ -14,7 +14,7 @@ function App() {
 
   {/* <!-- Main component  --> */}
   <main className="main">
-      <UserList />
+    <UserList />
 
 
     {/* <!-- User details component  --> */}
