@@ -7,12 +7,14 @@ import Search from "./Search";
 import UserListItem from "./UserListItem";
 import UserCreate from "./UserCreate";
 import UserInfo from "./UserInfo";
+import Delete from "./Delete";
 
 export default function UserList(){
     //TODO show error message to user using state
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
     const [userIdInfo, setUserIdInfo] = useState(null);
+    const [userIdDelete, setUserIdDelete] = useState(null);
 
     useEffect(()=>{
         userService.getAll()
@@ -55,6 +57,21 @@ export default function UserList(){
         setUserIdInfo(null)
 
     }
+    const userDeleteClickHandler = (userId) => {
+        setUserIdDelete(userId)
+    }
+
+    const userCancelDeleteClickHandler = () =>{
+        setUserIdDelete(null);
+    }
+    
+    const userDeleteHandler = async () => {
+        await userService.delete(userIdDelete);
+        setUsers(state => state.filter(user => user._id !== userIdDelete));
+        setUserIdDelete(null);
+
+    }
+
 
 
 
@@ -68,9 +85,13 @@ export default function UserList(){
         {userIdInfo && <UserInfo 
             userId={userIdInfo}
             onClose={userInfoCloseHandler}
+            
         />}
-  
-        {/* <!-- Table component --> */}
+        {userIdDelete && <Delete 
+            onCancel={userCancelDeleteClickHandler}
+            onDelete={userDeleteHandler}
+        />}
+
         <div className="table-wrapper">
         <div>{/* <!-- Overlap components  --> */}
   
@@ -201,6 +222,7 @@ export default function UserList(){
                 {users.map(user => <UserListItem 
                  key={user._id} 
                  onInfoClick={userInfoClickHandler}
+                 onDeleteClick={userDeleteClickHandler}
                  {...user}
                   />
                  )}
