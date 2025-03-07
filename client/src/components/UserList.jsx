@@ -7,12 +7,16 @@ import Search from "./Search";
 import UserListItem from "./UserListItem";
 
 export default function UserList(){
+    //TODO show error message to user using state
     const [users, setUsers] = useState([]);
 
     useEffect(()=>{
         userService.getAll()
             .then(result => {
                 setUsers(result);
+            })
+            .catch(error => {
+                console.log(error.message);
             })
 
     }, []);
@@ -148,7 +152,8 @@ export default function UserList(){
               </tr>
             </thead>
             <tbody>
-                <UserListItem />
+                {users.map(user => <UserListItem  key={user._id} {...user}/>)}
+                
             </tbody>
           </table>
         </div>
