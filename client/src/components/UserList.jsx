@@ -31,10 +31,31 @@ export default function UserList(){
     const closeCreateUserClickHandler = () => {
         setShowCreate(false);
     }
+    
+    const saveCreateUserClickHandler = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const userData = Object.fromEntries(formData);
+
+        //TODO error handling
+        const newUser = await userService.create(userData);
+
+        setUsers(state => [...state, newUser]);
+
+        setShowCreate(false);
+
+    }
+
+
+
     return (
         <section className="card users-container">
         <Search />
-        {showCreate && <UserCreate onClose={closeCreateUserClickHandler}/>}
+        {showCreate && <UserCreate 
+        onClose={closeCreateUserClickHandler}
+        onSave={saveCreateUserClickHandler}
+
+        />}
   
         {/* <!-- Table component --> */}
         <div className="table-wrapper">
