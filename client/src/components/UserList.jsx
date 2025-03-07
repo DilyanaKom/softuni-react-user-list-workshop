@@ -12,7 +12,7 @@ export default function UserList(){
     //TODO show error message to user using state
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
-    const [userIdInfo, setUserIdInfo] = useState();
+    const [userIdInfo, setUserIdInfo] = useState(null);
 
     useEffect(()=>{
         userService.getAll()
@@ -51,6 +51,10 @@ export default function UserList(){
     const userInfoClickHandler = (userId) => {
         setUserIdInfo(userId)
     }
+    const userInfoCloseHandler = () => {
+        setUserIdInfo(null)
+
+    }
 
 
 
@@ -63,6 +67,7 @@ export default function UserList(){
         />}
         {userIdInfo && <UserInfo 
             userId={userIdInfo}
+            onClose={userInfoCloseHandler}
         />}
   
         {/* <!-- Table component --> */}
