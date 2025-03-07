@@ -6,11 +6,13 @@ import Pagination from "./Pagination";
 import Search from "./Search";
 import UserListItem from "./UserListItem";
 import UserCreate from "./UserCreate";
+import UserInfo from "./UserInfo";
 
 export default function UserList(){
     //TODO show error message to user using state
     const [users, setUsers] = useState([]);
-    const [showCreate, setShowCreate] = useState(false)
+    const [showCreate, setShowCreate] = useState(false);
+    const [userIdInfo, setUserIdInfo] = useState();
 
     useEffect(()=>{
         userService.getAll()
@@ -46,6 +48,10 @@ export default function UserList(){
 
     }
 
+    const userInfoClickHandler = (userId) => {
+        setUserIdInfo(userId)
+    }
+
 
 
     return (
@@ -54,7 +60,9 @@ export default function UserList(){
         {showCreate && <UserCreate 
         onClose={closeCreateUserClickHandler}
         onSave={saveCreateUserClickHandler}
-
+        />}
+        {userIdInfo && <UserInfo 
+            userId={userIdInfo}
         />}
   
         {/* <!-- Table component --> */}
@@ -185,7 +193,12 @@ export default function UserList(){
               </tr>
             </thead>
             <tbody>
-                {users.map(user => <UserListItem  key={user._id} {...user}/>)}
+                {users.map(user => <UserListItem 
+                 key={user._id} 
+                 onInfoClick={userInfoClickHandler}
+                 {...user}
+                  />
+                 )}
                 
             </tbody>
           </table>
