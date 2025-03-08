@@ -15,10 +15,7 @@ export default {
 
     },
     async create(userData){
-        const {country, city, street, streetNumber, ...postData} = userData;
-        postData.address = {country, city, street, streetNumber};
-        postData.createdAt = new Date().toISOString();
-        postData.updatedAt = new Date().toISOString();
+        const postData = transformUserData(userData);
     
         const response = await fetch(baseUrl, {
             method: 'POST',
@@ -34,11 +31,44 @@ export default {
     },
     async delete(userId){
         const response = await fetch(`${baseUrl}/${userId}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify(userData)
         });
         const result = await response.json();
         return result;
 
     },
 
+    async update(userId, userData){
+        const postData = transformUserData(userData);
+        postData._id = userId;
+        const response = await fetch(`${baseUrl}/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(postData)
+        })
+
+        const result = await response.json();
+        return result;
+    }
+
+}
+
+function transformUserData(userData){
+    console.log(userData)
+    const {country, city, street, streetNumber, ...postData} = userData;
+    postData.address = {country, city, street, streetNumber};
+    
+    if (!userData.createdAt){
+        postData.createdAt = new Date().toISOString();
+    }
+    
+    postData.updatedAt = new Date().toISOString();
+
+    return postData;
 }

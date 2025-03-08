@@ -15,6 +15,7 @@ export default function UserList(){
     const [showCreate, setShowCreate] = useState(false);
     const [userIdInfo, setUserIdInfo] = useState(null);
     const [userIdDelete, setUserIdDelete] = useState(null);
+    const [userIdEdit, setUserIdEdit] = useState(null)
 
     useEffect(()=>{
         userService.getAll()
@@ -34,11 +35,12 @@ export default function UserList(){
 
     const closeCreateUserClickHandler = () => {
         setShowCreate(false);
+        setUserIdEdit(null)
     }
     
     const saveCreateUserClickHandler = async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.target.parentElement.parentElement);
         const userData = Object.fromEntries(formData);
 
         //TODO error handling
@@ -72,6 +74,22 @@ export default function UserList(){
 
     }
 
+    const userEditClickHandler = (userId) => {
+        setUserIdEdit(userId)
+    }
+
+    const saveEditUserClickHandler = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target.closest('form'));
+        const userData = Object.fromEntries(formData)
+
+        const updatedUser = await userService.update(userIdEdit, userData);
+
+        setUsers(state =>state.map(user => user._id === userIdEdit ? updatedUser : user ));
+
+        setUserIdEdit(null);
+    }
+
 
 
 
@@ -90,6 +108,14 @@ export default function UserList(){
         {userIdDelete && <Delete 
             onCancel={userCancelDeleteClickHandler}
             onDelete={userDeleteHandler}
+        />}
+
+        {userIdEdit && <UserCreate 
+            onClose={closeCreateUserClickHandler}
+            onSave={saveCreateUserClickHandler}
+            userId={userIdEdit}
+            onEdit={saveEditUserClickHandler}
+
         />}
 
         <div className="table-wrapper">
@@ -223,6 +249,7 @@ export default function UserList(){
                  key={user._id} 
                  onInfoClick={userInfoClickHandler}
                  onDeleteClick={userDeleteClickHandler}
+                 onEditClick={userEditClickHandler}
                  {...user}
                   />
                  )}
