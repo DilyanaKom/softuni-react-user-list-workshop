@@ -1,4 +1,8 @@
-export default function Search(){
+export default function Search({
+  onSearch,
+}){
+
+
     return (
         <form className="search-form">
         <h2>

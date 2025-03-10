@@ -90,12 +90,17 @@ export default function UserList(){
         setUserIdEdit(null);
     }
 
+    const seachClickHandler = () => {
+        //Collect search word and search criteria
+
+    }
+
 
 
 
     return (
         <section className="card users-container">
-        <Search />
+        <Search onSearch={seachClickHandler}/>
         {showCreate && <UserCreate 
         onClose={closeCreateUserClickHandler}
         onSave={saveCreateUserClickHandler}
