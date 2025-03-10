@@ -90,8 +90,10 @@ export default function UserList(){
         setUserIdEdit(null);
     }
 
-    const seachClickHandler = () => {
+    const seachClickHandler = (searchValue, criteriaValue, e) => {
         //Collect search word and search criteria
+        e.preventDefault();
+        console.log(searchValue, criteriaValue)
 
     }
 
