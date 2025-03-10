@@ -9,7 +9,7 @@ import UserCreate from "./UserCreate";
 import UserInfo from "./UserInfo";
 import Delete from "./Delete";
 
-export default function UserList(){
+export default function UserList() {
     //TODO show error message to user using state
     const [users, setUsers] = useState([]);
     const [showCreate, setShowCreate] = useState(false);
@@ -17,7 +17,7 @@ export default function UserList(){
     const [userIdDelete, setUserIdDelete] = useState(null);
     const [userIdEdit, setUserIdEdit] = useState(null)
 
-    useEffect(()=>{
+    useEffect(() => {
         userService.getAll()
             .then(result => {
                 setUsers(result);
@@ -28,7 +28,7 @@ export default function UserList(){
 
     }, []);
 
-    const createUserClickHandler = () =>{
+    const createUserClickHandler = () => {
         setShowCreate(true);
 
     };
@@ -37,7 +37,7 @@ export default function UserList(){
         setShowCreate(false);
         setUserIdEdit(null)
     }
-    
+
     const saveCreateUserClickHandler = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target.parentElement.parentElement);
@@ -63,10 +63,10 @@ export default function UserList(){
         setUserIdDelete(userId)
     }
 
-    const userCancelDeleteClickHandler = () =>{
+    const userCancelDeleteClickHandler = () => {
         setUserIdDelete(null);
     }
-    
+
     const userDeleteHandler = async () => {
         await userService.delete(userIdDelete);
         setUsers(state => state.filter(user => user._id !== userIdDelete));
@@ -85,15 +85,25 @@ export default function UserList(){
 
         const updatedUser = await userService.update(userIdEdit, userData);
 
-        setUsers(state =>state.map(user => user._id === userIdEdit ? updatedUser : user ));
+        setUsers(state => state.map(user => user._id === userIdEdit ? updatedUser : user));
 
         setUserIdEdit(null);
     }
 
     const seachClickHandler = (searchValue, criteriaValue, e) => {
-        //Collect search word and search criteria
         e.preventDefault();
-        console.log(searchValue, criteriaValue)
+        const filtered = users.filter((user) => {
+            if (!criteriaValue) {
+                return (
+                    user.firstName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    user.lastName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    user.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    user.phoneNumber.toLowerCase().includes(searchValue.toLowerCase()));
+            }
+            return user[criteriaValue]?.toLowerCase().includes(searchValue.toLowerCase());
+        });
+
+        setUsers(filtered)
 
     }
 
@@ -102,39 +112,39 @@ export default function UserList(){
 
     return (
         <section className="card users-container">
-        <Search onSearch={seachClickHandler}/>
-        {showCreate && <UserCreate 
-        onClose={closeCreateUserClickHandler}
-        onSave={saveCreateUserClickHandler}
-        />}
-        {userIdInfo && <UserInfo 
-            userId={userIdInfo}
-            onClose={userInfoCloseHandler}
-            
-        />}
-        {userIdDelete && <Delete 
-            onCancel={userCancelDeleteClickHandler}
-            onDelete={userDeleteHandler}
-        />}
+            <Search onSearch={seachClickHandler} />
+            {showCreate && <UserCreate
+                onClose={closeCreateUserClickHandler}
+                onSave={saveCreateUserClickHandler}
+            />}
+            {userIdInfo && <UserInfo
+                userId={userIdInfo}
+                onClose={userInfoCloseHandler}
 
-        {userIdEdit && <UserCreate 
-            onClose={closeCreateUserClickHandler}
-            onSave={saveCreateUserClickHandler}
-            userId={userIdEdit}
-            onEdit={saveEditUserClickHandler}
+            />}
+            {userIdDelete && <Delete
+                onCancel={userCancelDeleteClickHandler}
+                onDelete={userDeleteHandler}
+            />}
 
-        />}
+            {userIdEdit && <UserCreate
+                onClose={closeCreateUserClickHandler}
+                onSave={saveCreateUserClickHandler}
+                userId={userIdEdit}
+                onEdit={saveEditUserClickHandler}
 
-        <div className="table-wrapper">
-        <div>{/* <!-- Overlap components  --> */}
-  
-  {/* <!-- <div className="loading-shade"> --> */}
-  {/* <!-- Loading spinner  --> */}
-  {/* <!-- <div className="spinner"></div> --> */}
-  {/* <!-- No users added yet  --> */}
+            />}
 
-  {/* <!-- <div className="table-overlap"> */}
-        {/* <svg
+            <div className="table-wrapper">
+                <div>{/* <!-- Overlap components  --> */}
+
+                    {/* <!-- <div className="loading-shade"> --> */}
+                    {/* <!-- Loading spinner  --> */}
+                    {/* <!-- <div className="spinner"></div> --> */}
+                    {/* <!-- No users added yet  --> */}
+
+                    {/* <!-- <div className="table-overlap"> */}
+                    {/* <svg
           aria-hidden="true"
           focusable="false"
           data-prefix="fas"
@@ -152,9 +162,9 @@ export default function UserList(){
         <h2>There is no users yet.</h2>
       </div> --> */}
 
-  {/* <!-- No content overlap component  --> */}
+                    {/* <!-- No content overlap component  --> */}
 
-  {/* <!-- <div className="table-overlap">
+                    {/* <!-- <div className="table-overlap">
         <svg
           aria-hidden="true"
           focusable="false"
@@ -173,10 +183,10 @@ export default function UserList(){
         <h2>Sorry, we couldn't find what you're looking for.</h2>
       </div> --> */}
 
-  {/* <!-- On error overlap component  --> */}
+                    {/* <!-- On error overlap component  --> */}
 
-  {/* <!-- <div className="table-overlap"> */}
-        {/* <svg
+                    {/* <!-- <div className="table-overlap"> */}
+                    {/* <svg
           aria-hidden="true"
           focusable="false"
           data-prefix="fas"
@@ -193,81 +203,81 @@ export default function UserList(){
         </svg>
         <h2>Failed to fetch</h2>
       </div> --> */}
-            {/* <!-- </div> --> */}
-        </div>
-  
-          <table className="table">
-            <thead>
-              <tr>
-                <th>
-                  Image
-                </th>
-                <th>
-                  First name<svg aria-hidden="true" focusable="false" data-prefix="fas"
-                    data-icon="arrow-down" className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                      d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
-                    </path>
-                  </svg>
-                </th>
-                <th>
-                  Last name<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
-                    className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                      d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
-                    </path>
-                  </svg>
-                </th>
-                <th>
-                  Email<svg className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
-                     role="img" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                      d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
-                    </path>
-                  </svg>
-                </th>
-                <th>
-                  Phone<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
-                    className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                      d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
-                    </path>
-                  </svg>
-                </th>
-                <th>
-                  Created
-                  <svg aria-hidden="true" focusable="false" data-prefix="fas"
-                    data-icon="arrow-down" className="icon active-icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
-                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                    <path fill="currentColor"
-                      d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
-                    </path>
-                  </svg>
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-                {users.map(user => <UserListItem 
-                 key={user._id} 
-                 onInfoClick={userInfoClickHandler}
-                 onDeleteClick={userDeleteClickHandler}
-                 onEditClick={userEditClickHandler}
-                 {...user}
-                  />
-                 )}
-                
-            </tbody>
-          </table>
-        </div>
-  
-        <button className="btn-add btn" onClick={createUserClickHandler}>Add new user</button>
-  
-        <Pagination />
-      </section>
+                    {/* <!-- </div> --> */}
+                </div>
+
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Image
+                            </th>
+                            <th>
+                                First name<svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                    data-icon="arrow-down" className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                    <path fill="currentColor"
+                                        d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
+                                    </path>
+                                </svg>
+                            </th>
+                            <th>
+                                Last name<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
+                                    className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 384 512">
+                                    <path fill="currentColor"
+                                        d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
+                                    </path>
+                                </svg>
+                            </th>
+                            <th>
+                                Email<svg className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
+                                    role="img" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 384 512">
+                                    <path fill="currentColor"
+                                        d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
+                                    </path>
+                                </svg>
+                            </th>
+                            <th>
+                                Phone<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-down"
+                                    className="icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 384 512">
+                                    <path fill="currentColor"
+                                        d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
+                                    </path>
+                                </svg>
+                            </th>
+                            <th>
+                                Created
+                                <svg aria-hidden="true" focusable="false" data-prefix="fas"
+                                    data-icon="arrow-down" className="icon active-icon svg-inline--fa fa-arrow-down Table_icon__+HHgn" role="img"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                                    <path fill="currentColor"
+                                        d="M374.6 310.6l-160 160C208.4 476.9 200.2 480 192 480s-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 370.8V64c0-17.69 14.33-31.1 31.1-31.1S224 46.31 224 64v306.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0S387.1 298.1 374.6 310.6z">
+                                    </path>
+                                </svg>
+                            </th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map(user => <UserListItem
+                            key={user._id}
+                            onInfoClick={userInfoClickHandler}
+                            onDeleteClick={userDeleteClickHandler}
+                            onEditClick={userEditClickHandler}
+                            {...user}
+                        />
+                        )}
+
+                    </tbody>
+                </table>
+            </div>
+
+            <button className="btn-add btn" onClick={createUserClickHandler}>Add new user</button>
+
+            <Pagination />
+        </section>
     )
 }
